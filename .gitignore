@@ -134,4 +134,4 @@ Exchange/media/profile_pics/
 .idea/
 
 # Compress files like dependency charts
-.tgz
+*.tgz
