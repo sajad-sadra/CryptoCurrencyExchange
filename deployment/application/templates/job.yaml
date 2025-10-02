@@ -12,8 +12,6 @@ metadata:
     "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
 spec:
   backoffLimit: 3
-  successfulJobsHistoryLimit: 1
-  failedJobsHistoryLimit: 1
   template:
     metadata:
       labels:
