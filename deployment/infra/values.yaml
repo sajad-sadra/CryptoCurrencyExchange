@@ -3,3 +3,5 @@ prometheus:
     enabled: false
   prometheus-pushgateway:
     enabled: false
+  prometheus-node-exporter:
+    enabled: false
