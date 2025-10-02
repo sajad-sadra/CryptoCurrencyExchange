@@ -9,3 +9,7 @@ prometheus:
   kube-state-metrics:
     enabled: false
 
+grafana:
+  persistence:
+    enabled: true
+    size: 1Gi
