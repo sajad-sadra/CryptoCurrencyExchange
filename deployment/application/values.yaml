@@ -1,0 +1,20 @@
+postgresql:
+  image:
+    tag: "14.8" # The latest compatible version with Django 4.1.1
+  database: "exchange_db"
+  username: "exchange_user"
+  storageClass: "standard"
+  storageSize: "10Gi"
+
+
+application:
+  debug: true
+  image:
+    # TODO: Change this image after our custom image is built and pushed to a container registry.
+    repository: "docker.io/python"
+    tag: "3.9.23-slim"
+
+
+# TODO list:
+# - Add liveness and readiness probes for each component.
+# - Add resource requests and limits for each component.

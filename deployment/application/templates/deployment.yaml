@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+      service: app
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        service: app
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.application.image.repository }}:{{ .Values.application.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          command: ["sleep", "infinity"]
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: DATABASE_NAME
+              value: "{{ .Values.postgresql.database }}"
+            - name: DATABASE_USER
+              value: "{{ .Values.postgresql.username }}"
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql-password
+                  key: password
+            - name: DATABASE_HOST
+              value: "{{ .Release.Name }}-postgresql" # Service name for PostgreSQL
+            - name: DATABASE_PORT
+              value: "5432"
+          {{- if .Values.application.debug }}
+            - name: DEBUG
+              value: "True"
+          {{- else }}
+            - name: DEBUG
+              value: "False"
+          {{- end }}
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-api-key
+                  key: apikey

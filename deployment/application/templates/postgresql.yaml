@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-postgresql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+      service: postgresql
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        service: postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: "docker.io/postgres:{{ .Values.postgresql.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_DB
+              value: "{{ .Values.postgresql.database }}"
+            - name: POSTGRES_USER
+              value: "{{ .Values.postgresql.username }}"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql-password
+                  key: password
+          volumeMounts:
+            - name: {{ .Release.Name }}-postgresql-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ .Release.Name }}-postgresql-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        persistentVolumeReclaimPolicy: Delete # TODO: Change it to Retain after testing.
+        storageClassName: "{{ .Values.postgresql.storageClass }}"
+        resources:
+          requests:
+            storage: "{{ .Values.postgresql.storageSize }}"
+---
+# This conditional checks if a Kubernetes Secret named "<release-name>-postgresql-password" does not exist in the current release namespace.
+# If the Secret is absent, the following template content will be rendered (typically to create the Secret).
+# This helps prevent overwriting an existing Secret during Helm upgrades or re-installs.
+{{- if not (lookup "v1" "Secret" .Release.Namespace (printf "%s-postgresql-password" .Release.Name)) }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Release.Name }}-postgresql-password
+  labels:
+    app: {{ .Release.Name }}
+    service: postgresql
+  annotations:
+    # These two annotations ensure the resource is created before Helm installs the chart and deleted before
+    # re-creating it, preventing installation conflicts.
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-delete-policy": before-hook-creation
+stringData:
+  password: {{ randAlphaNum 20 }}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-postgresql
+  labels:
+    app: {{ .Release.Name }}
+    service: postgresql
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+      name: postgres
+  selector:
+    app: {{ .Release.Name }}
+    service: postgresql
