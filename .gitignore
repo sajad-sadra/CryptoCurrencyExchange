@@ -132,3 +132,6 @@ dmypy.json
 Exchange/media/profile_pics/
 
 .idea/
+
+# Compress files like dependency charts
+.tgz
