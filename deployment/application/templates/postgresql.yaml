@@ -34,12 +34,21 @@ spec:
           volumeMounts:
             - name: {{ .Release.Name }}-postgresql-data
               mountPath: /var/lib/postgresql/data
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - {{ .Values.postgresql.username }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
   volumeClaimTemplates:
     - metadata:
         name: {{ .Release.Name }}-postgresql-data
       spec:
         accessModes: [ "ReadWriteOnce" ]
-        persistentVolumeReclaimPolicy: Delete # TODO: Change it to Retain after testing.
         storageClassName: "{{ .Values.postgresql.storageClass }}"
         resources:
           requests:

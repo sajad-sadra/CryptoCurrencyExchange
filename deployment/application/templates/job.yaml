@@ -1,27 +1,29 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: {{ .Release.Name }}-app
+  name: {{ .Release.Name }}-migrate
+  labels:
+    app: {{ .Release.Name }}
+    job: migrate
+  annotations:
+    # Run before install and before upgrade
+    "helm.sh/hook": "post-install,pre-upgrade"
+    # ensure old hook job is cleaned up before creating a new one
+    "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: {{ .Release.Name }}
-      service: app
+  backoffLimit: 3
   template:
     metadata:
       labels:
         app: {{ .Release.Name }}
-        service: app
+        job: migrate
     spec:
+      restartPolicy: OnFailure
       containers:
-        - name: app
+        - name: migrate
           image: "{{ .Values.application.image.repository }}:{{ .Values.application.image.tag }}"
           imagePullPolicy: IfNotPresent
-          command: ["python", "manage.py", "runserver"]
-          ports:
-            - containerPort: 8000
-              name: http
+          command: ["python", "manage.py", "migrate"]
           env:
             - name: DATABASE_NAME
               value: "{{ .Values.postgresql.database }}"
@@ -48,11 +50,3 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-api-key
                   key: apikey
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 8000
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 6
