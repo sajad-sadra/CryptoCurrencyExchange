@@ -4,7 +4,11 @@ This is a fork from [this](https://github.com/MGasiorowskii/CryptoCurrencyExchan
 [**More information**](https://docs.google.com/document/d/1m6ifYHMOcdHvpaKTzs24tSwqfCIZsxKzsyjxKr4g2Jc/edit?usp=sharing)
 
 ## Code base
-The code base moved under `src/` directory. The original code is untouched(just some settings like `ALLOWED_HOST` has been changed).
+The code base moved under `src/` directory. The original code is nearly untouched.
+I just made these little changes:
+- Added requirements.txt file to install dependencies using pip.
+- Added a `Dockerfile` to build the docker image.
+- Make `ALLOWED_HOSTS` configurable using environment variable.
 
 ## Deployment
 The deployment files are under `deployment/` directory. It contains helm charts to deploy the application and monitoring stack alongside it. read the [readme](./deployment/README.md) file under `deployment/` directory for more information about how to deploy the stack.
