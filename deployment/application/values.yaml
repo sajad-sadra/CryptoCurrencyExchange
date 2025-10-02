@@ -5,6 +5,9 @@ postgresql:
   username: "exchange_user"
   storageClass: "standard"
   storageSize: "10Gi"
+  backup:
+    enabled: true
+    schedule: "0 2 * * *" # Daily at 2AM UTC
 
 
 application:
@@ -16,3 +19,7 @@ application:
 
 # TODO list:
 # - Add resource requests and limits for each component.
+# - Use CloudNativePG for PostgreSQL or:
+#   - Make backup job store backup files in object storage like S3
+#   - Add retention feature to backup job
+#   - Make PostgreSQL HA

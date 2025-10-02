@@ -90,3 +90,45 @@ spec:
   selector:
     app: {{ .Release.Name }}
     service: postgresql
+
+{{- if .Values.postgresql.backup.enabled }}
+---
+# PostgreSQL backup
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-postgresql-backup
+  labels:
+    app: {{ .Release.Name }}
+    job: postgres-backup
+spec:
+  schedule: {{ .Values.postgresql.backup.schedule }}
+  startingDeadlineSeconds: 3600 # # If the job cannot start within 1 hour of its schedule, it will be skipped.
+  backoffLimit: 3
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: docker.io/postgres:{{ .Values.postgresql.image.tag }}
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Release.Name }}-postgresql-password
+                      key: password
+              command: ["/bin/sh", "-c"]
+              args:
+                - pg_dump -h {{ .Release.Name }}-postgresql -U {{ .Values.postgresql.username }} {{ .Values.postgresql.database }} > /backups/backup_$(date +\%F).sql
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backups
+          volumes:
+            - name: backup-storage
+              persistentVolumeClaim:
+                claimName: {{ .Release.Name }}-postgresql-backup-pvc
+{{- end }}
