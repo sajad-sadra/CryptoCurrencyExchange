@@ -41,3 +41,14 @@ minikube service <release-name>-app --url
 ```
 Replace `<release-name>` with the name you used in the previous step.
 It will return the URL of the application. just copy and paste it in your browser.
+
+# TODO
+These are some of the things that can be improved in this setup:
+ - Add resource requests and limits for each component.
+ - Add readiness probe for each component.
+ - Add wait for database if Django migration is not handling this.
+ - Make ingress with domain and TLS instead of loadbalancer.
+ - Use operator(i recommend CloudNativePG) for PostgreSQL or:
+   - Make backup job store backup files in object storage like S3.
+   - Add retention feature to backup job.
+   - Make PostgreSQL HA.
