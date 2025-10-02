@@ -14,7 +14,7 @@ application:
   debug: true
   image:
     repository: "sajadsadra/crypto-currency-exchange"
-    tag: "v1.0.0"
+    tag: "v1.0.1"
 
 
 # TODO list:

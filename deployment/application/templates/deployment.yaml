@@ -48,6 +48,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-api-key
                   key: apikey
+            - name: ALLOWED_HOSTS
+              value: "*" # Change this in production to your domain names.
           livenessProbe:
             httpGet:
               path: /
