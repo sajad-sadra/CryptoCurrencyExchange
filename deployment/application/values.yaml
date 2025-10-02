@@ -21,6 +21,7 @@ application:
 # - Add resource requests and limits for each component.
 # - Add readiness probe for each component.
 # - Add wait for database if Django migration is not handling this.
+# - Make ingress with domain and TLS instead of loadbalancer.
 # - Use CloudNativePG for PostgreSQL or:
 #   - Make backup job store backup files in object storage like S3
 #   - Add retention feature to backup job

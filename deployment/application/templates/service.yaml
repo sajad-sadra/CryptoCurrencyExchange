@@ -6,6 +6,7 @@ metadata:
     app: {{ .Release.Name }}
     service: app
 spec:
+  # TODO: This should be changed to clusterIP with ingress in production.
   type: LoadBalancer
   ports:
     - port: 8000
