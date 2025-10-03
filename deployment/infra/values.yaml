@@ -13,6 +13,7 @@ grafana:
   persistence:
     enabled: true
     size: 1Gi
+  # Preconfigure datasources for loki and prometheus
   datasources:
    datasources.yaml:
      apiVersion: 1
