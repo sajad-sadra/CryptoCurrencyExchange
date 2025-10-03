@@ -13,3 +13,12 @@ grafana:
   persistence:
     enabled: true
     size: 1Gi
+  datasources:
+   datasources.yaml:
+     apiVersion: 1
+     datasources:
+     - name: Prometheus
+       type: prometheus
+       url: http://monitoring-prometheus-server
+       access: proxy
+       isDefault: true
