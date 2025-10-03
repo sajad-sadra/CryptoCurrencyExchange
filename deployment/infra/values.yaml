@@ -17,8 +17,40 @@ grafana:
    datasources.yaml:
      apiVersion: 1
      datasources:
-     - name: Prometheus
-       type: prometheus
-       url: http://monitoring-prometheus-server
-       access: proxy
-       isDefault: true
+      - name: Prometheus
+        type: prometheus
+        url: http://monitoring-prometheus-server
+        access: proxy
+        isDefault: true
+      - name: Loki
+        type: loki
+        access: proxy
+        url: http://monitoring-loki:3100
+        jsonData:
+          httpHeaderName1: "X-Scope-OrgID"
+        secureJsonData:
+          httpHeaderValue1: "1"
+
+loki:
+  deploymentMode: SingleBinary
+  loki:
+    # for quick local testing you can use the test schema (avoids needing a full schemaConfig)
+    useTestSchema: true
+    commonConfig:
+      replication_factor: 1
+    storage:
+      type: filesystem
+  # ensure monolithic replica is >0
+  singleBinary:
+    replicas: 1
+  # ensure scalable targets are all zero
+  write:
+    replicas: 0
+  read:
+    replicas: 0
+  backend:
+    replicas: 0
+  queryFrontend:
+    replicas: 0
+  bloomBuilder:
+    replicas: 0
