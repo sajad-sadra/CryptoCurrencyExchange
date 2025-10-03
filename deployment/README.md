@@ -19,6 +19,11 @@ This umbrella chart includes some other chart as dependency and it install these
 
 To install the monitoring stack, run the prepared bash script `setup.sh` in the `deployment/infra` directory.
 
+This chart will spin up all three component and add prometheus and loki as datasource to the grafana
+automatically.
+
+> You should access grafana via port-forward it's service. also it has one admin user and the password to it is stored under a secret.
+
 ## 4. Deploy the application
 To deploy the application in the cluster install the prepared helm chart in the `deployment/application` directory.
 You can customize the deployment by editing the `values.yaml` file in the same directory.
